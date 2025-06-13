@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Hitsong - 首頁</title>
+    <link rel="icon" href="https://i.postimg.cc/bwZ33vXg/Photoroom.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 64px;
+            height: 200vh;
+            background: #111;
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            transition: height 0.3s ease;
+        }
+        
+        body.fixed-page-height {
+            height: 100vh;
+            overflow-y: hidden;
+        }
+        
+        html.fixed-page-height {
+            height: 100vh;
+            overflow-y: hidden;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            box-sizing: border-box;
+            color: #fff;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 1;
+            color: #fff;
+        }
+        
+        .button-link {
+            border: 1px solid #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .button-link:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        .scene {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - 64px);
+            perspective: 1000px;
+            pointer-events: auto;
+            z-index: 0;
+        }
+        
+        .content {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            --inner-line-color: #2c2c2c;
+            --grid-spacing: 20px;
+            background: var(--inner-line-color);
+            gap: var(--grid-spacing);
+            padding: var(--grid-spacing);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-content: flex-start;
+            align-items: flex-start;
+            color: white;
+            overflow-y: auto;
+            pointer-events: auto;
+            transition: transform 0.05s linear;
+            border: none;
+            box-sizing: border-box;
+        }
+        
+        .content.fixed-mode {
+            transform: rotateY(0deg) !important;
+        }
+        
+        .content.compact-mode .album-info {
+            display: none;
+        }
+        
+        .content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .content::-webkit-scrollbar-track {
+            background: #2c2c2c;
+            border-radius: 10px;
+        }
+        
+        .content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .content {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #2c2c2c;
+        }
+        
+        .pad-item {
+            display: flex;
+            width: calc((100% - var(--grid-spacing) * 3) / 4);
+            height: auto;
+            background: black;
+            border-radius: 20px;
+            padding: 0;
+            border: none;
+            transition: background 0.1s ease-in-out;
+            cursor: default;
+            font-size: 1.5rem;
+            color: white;
+            overflow: hidden;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .pad-item .album-cover {
+            pointer-events: auto;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pad-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease-in-out;
+            pointer-events: none;
+            user-select: none;
+            border-radius: 20px;
+        }
+        
+        .pad-item .album-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            color: white;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .pad-item .album-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .pad-item .artist-name {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .pad-item .album-cover:hover {
+            background: #333;
+        }
+        
+        .pad-item .album-cover:hover img {
+            transform: scale(1.1);
+        }
+        
+        .pad-item .album-cover:active {
+            background: #555;
+        }
+        
+        .pad-item .album-cover:active img {
+            transform: scale(0.95);
+        }
+        
+        .dynamic-island {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            border-radius: 999px;
+            padding: 8px 16px;
+            z-index: 1001;
+        }
+        
+        .dynamic-island-menu {
+            position: relative;
+            display: flex;
+            gap: 16px;
+        }
+        
+        .dynamic-island-menu a {
+            position: relative;
+            text-decoration: none;
+            width: 90px;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 999px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+            z-index: 2;
+        }
+        
+        .dynamic-island-menu a.active {
+            color: black;
+        }
+        
+        .dynamic-island-menu a:hover {
+            opacity: 1;
+        }
+        
+        .dynamic-island-indicator {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: white;
+            border-radius: 999px;
+            transition: left 0.3s ease;
+            z-index: 1;
+            width: 90px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="Hitsong.png" alt="Logo" style="height: 128px; vertical-align: middle;" /></a>
+
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="hit.html">HIT</a>
+            <a href="#" class="button-link">SIGN UP</a>
+        </nav>
+    </header>
+
+    <div class="scene">
+        <div class="content" id="content">
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/FF8pQyQ0/down.jpg" alt="Dawn FM">
+                    <div class="album-info">
+                        <div class="album-title">Dawn FM</div>
+                        <div class="artist-name">The Weeknd</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/Zq5pNnST/utopia.jpg" alt="UTOPIA">
+                    <div class="album-info">
+                        <div class="album-title">UTOPIA</div>
+                        <div class="artist-name">Travis Scott</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/LhF6HYxm/himeharandsoft.jpg" alt="himeharandsoft">
+                    <div class="album-info">
+                        <div class="album-title">HIT ME HARD AND SOFT</div>
+                        <div class="artist-name">Billie Eilish</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/PxNqKkLn/chromakopia.jpg" alt="CHROMAKOPIA">
+                    <div class="album-info">
+                        <div class="album-title">CHROMAKOPIA</div>
+                        <div class="artist-name">Tyler, The Creator</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/prFLbYY0/heroes-villains.jpg" alt="Heroes & Villains">
+                    <div class="album-info">
+                        <div class="album-title">Heroes & Villains</div>
+                        <div class="artist-name">Metro Boomin</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/0jwpN4qD/My21st-Century-Blues.jpg" alt="My 21st Century Blues">
+                    <div class="album-info">
+                        <div class="album-title">My 21st Century Blues</div>
+                        <div class="artist-name">RAYE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/LsxXzs8V/Blonde.jpg" alt="Blonde">
+                    <div class="album-info">
+                        <div class="album-title">Blonde</div>
+                        <div class="artist-name">Frank Ocean</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/GpLt8Dd2/americandream.jpg" alt="American Dream">
+                    <div class="album-info">
+                        <div class="album-title">American Dream</div>
+                        <div class="artist-name">21 Savage</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/WbZhQj52/aloneatprom.jpg" alt="Alone at Prom">
+                    <div class="album-info">
+                        <div class="album-title">Alone at Prom</div>
+                        <div class="artist-name">Tory Lanez</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/bJMwBFbD/chaseatlantic.jpg" alt="Chase Atlantic">
+                    <div class="album-info">
+                        <div class="album-title">Chase Atlantic</div>
+                        <div class="artist-name">Chase Atlantic</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/tRYkfr8X/hollywoodsbleeding.jpg" alt="Hollywood's Bleeding">
+                    <div class="album-info">
+                        <div class="album-title">Hollywood's Bleeding</div>
+                        <div class="artist-name">Post Malone</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/Xvjcgxw6/hot.jpg" alt="HOT">
+                    <div class="album-info">
+                        <div class="album-title">HOT</div>
+                        <div class="artist-name">LE SSERAFIM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/MpbmRgfY/jennie.jpg" alt="Ruby">
+                    <div class="album-info">
+                        <div class="album-title">Ruby</div>
+                        <div class="artist-name">Jennie</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/HL60v52c/Justice.png" alt="Justice">
+                    <div class="album-info">
+                        <div class="album-title">Justice</div>
+                        <div class="artist-name">Justin Bieber</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/9QjBDc0M/moodswinginthisorder.jpg" alt="Moodswings in to Order">
+                    <div class="album-info">
+                        <div class="album-title">Moodswings in to Order</div>
+                        <div class="artist-name">DPR Ian</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/853RNSxT/narratedforyou.jpg" alt="Narrated for You">
+                    <div class="album-info">
+                        <div class="album-title">Narrated for You</div>
+                        <div class="artist-name">Alec Benjamin</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/XY3wVx1B/Petalsto-Thorns.jpg" alt="Petals to Thorns">
+                    <div class="album-info">
+                        <div class="album-title">Petals to Thorns</div>
+                        <div class="artist-name">d4vd</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/7PG1X5Th/requiem.jpg" alt="Requiem">
+                    <div class="album-info">
+                        <div class="album-title">Requiem</div>
+                        <div class="artist-name">Keshi</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/TPNmJxdn/shortandsweet.jpg" alt="Short n' Sweet">
+                    <div class="album-info">
+                        <div class="album-title">Short n' Sweet</div>
+                        <div class="artist-name">Sabrina Carpenter</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/ZR9NfQn2/sos.png" alt="SOS">
+                    <div class="album-info">
+                        <div class="album-title">SOS</div>
+                        <div class="artist-name">SZA</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/gcq63H1H/eternalsunshine.jpg" alt="Eternal Sunshine">
+                    <div class="album-info">
+                        <div class="album-title">Eternal Sunshine</div>
+                        <div class="artist-name">Ariana Grande</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/J0qDmRj2/imetyouwheniwas18.jpg" alt="I Met You When I Was 18 ">
+                    <div class="album-info">
+                        <div class="album-title">I Met You When I Was 18 </div>
+                        <div class="artist-name">Lauv</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/5y1YZXQz/balllads-1.jpg" alt="BALLADS 1">
+                    <div class="album-info">
+                        <div class="album-title">BALLADS 1</div>
+                        <div class="artist-name">Joji</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pad-item">
+                <div class="album-cover">
+                    <img src="https://i.postimg.cc/VLf0gb8Q/DELUXE.jpg" alt="÷ (Deluxe)">
+                    <div class="album-info">
+                        <div class="album-title">÷ (Deluxe)</div>
+                        <div class="artist-name">ED Sheeran</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dynamic-island">
+        <div class="dynamic-island-menu" id="menu">
+            <a href="#" class="active" id="mode-default" data-mode="default">Default</a>
+            <a href="#" id="mode-fixed" data-mode="fixed">Fixed</a>
+            <a href="#" id="mode-compact" data-mode="compact">Compact</a>
+            <div class="dynamic-island-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        const content = document.getElementById('content');
+        const menu = document.getElementById('menu');
+        const links = menu.querySelectorAll('a');
+        const indicator = menu.querySelector('.dynamic-island-indicator');
+        const body = document.body;
+        const html = document.documentElement;
+
+        const INDICATOR_WIDTH = 90;
+
+        let currentMode = 'default';
+
+        function moveIndicatorTo(element) {
+            const rect = element.getBoundingClientRect();
+            const parentRect = menu.getBoundingClientRect();
+            const center = rect.left + rect.width / 2 - parentRect.left;
+            const left = center - INDICATOR_WIDTH / 2;
+            indicator.style.left = `${left}px`;
+        }
+
+        function applyMode(mode) {
+            currentMode = mode;
+            content.classList.remove('fixed-mode', 'compact-mode');
+
+
+            body.classList.remove('fixed-page-height');
+            html.classList.remove('fixed-page-height');
+
+            if (mode === 'fixed') {
+                content.classList.add('fixed-mode');
+                body.classList.add('fixed-page-height');
+                html.classList.add('fixed-page-height');
+            } else if (mode === 'compact') {
+                content.classList.add('compact-mode');
+                body.classList.add('fixed-page-height');
+                html.classList.add('fixed-page-height');
+            }
+
+            links.forEach(link => {
+                if (link.dataset.mode === mode) {
+                    link.classList.add('active');
+                    moveIndicatorTo(link);
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', () => {
+            if (currentMode === 'default' && content) {
+                const scrollTop = window.scrollY;
+                const maxScroll = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = maxScroll > 0 ? scrollTop / maxScroll : 0;
+                const rotation = scrollPercent * 180;
+                content.style.transform = `rotateY(${rotation}deg)`;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyMode('default');
+        });
+
+        links.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const mode = link.dataset.mode;
+                applyMode(mode);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            const currentActive = menu.querySelector('a.active');
+            if (currentActive) moveIndicatorTo(currentActive);
+        });
+    </script>
+</body>
+
+</html>

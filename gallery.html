@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Hitsong - Gallery</title>
+    <link rel="icon" href="https://i.postimg.cc/bwZ33vXg/Photoroom.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 64px;
+            height: 100vh;
+            background: #111;
+            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            box-sizing: border-box;
+            color: #fff;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        
+        .logo img {
+            height: 128px;
+            vertical-align: middle;
+        }
+        
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transition: all 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 1;
+            color: #fff;
+        }
+        
+        .button-link {
+            border: 1px solid #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .button-link:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        .scene {
+            flex-grow: 1;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            box-sizing: border-box;
+            position: relative;
+            pointer-events: auto;
+        }
+        
+        .content {
+            display: grid;
+            grid-auto-flow: column;
+            gap: 30px;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            scroll-padding-left: 0;
+            scroll-padding-right: 0;
+            width: calc(100% - 80px);
+            max-width: 1400px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+            position: relative;
+            scroll-behavior: smooth;
+            margin-bottom: 80px;
+            z-index: 1;
+        }
+        
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .spotify-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: content-box;
+            width: 320px;
+            height: 352px;
+            flex-shrink: 0;
+            scroll-snap-align: center;
+            z-index: 2;
+            border: 4px solid transparent;
+        }
+        
+        .spotify-item iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+        
+        .spotify-item.active {
+            transform: scale(1.05);
+            border: 4px solid #1DB954;
+            box-shadow: 0 0 30px rgba(29, 185, 84, 0.8);
+        }
+        
+        .navigation-buttons {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 80px);
+            max-width: 1400px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 998;
+            padding: 0 40px;
+            box-sizing: border-box;
+        }
+        
+        .scroll-button {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            font-size: 2em;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: background 0.3s ease, opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            opacity: 0.7;
+            pointer-events: auto;
+        }
+        
+        .scroll-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            opacity: 1;
+        }
+        
+        .dynamic-island {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            border-radius: 999px;
+            padding: 8px 16px;
+            z-index: 999;
+        }
+        
+        .dynamic-island-menu {
+            position: relative;
+            display: flex;
+            gap: 16px;
+        }
+        
+        .dynamic-island-menu a {
+            position: relative;
+            text-decoration: none;
+            width: 90px;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 999px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+            z-index: 2;
+        }
+        
+        .dynamic-island-menu a.active {
+            color: black;
+        }
+        
+        .dynamic-island-menu a:hover {
+            opacity: 1;
+        }
+        
+        .dynamic-island-indicator {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: white;
+            border-radius: 999px;
+            transition: left 0.3s ease;
+            z-index: 1;
+            width: 90px;
+        }
+        /* --- RWD Adjustments --- */
+        
+        @media (max-width: 1440px) {
+            .content,
+            .navigation-buttons {
+                width: calc(100% - 80px);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .spotify-item {
+                width: 300px;
+                height: 330px;
+            }
+            .content {
+                overflow-x: scroll;
+                scroll-snap-type: x mandatory;
+                padding: 15px;
+                width: calc(100% - 30px);
+                gap: 20px;
+                margin-bottom: 80px;
+                scroll-padding-left: 0;
+                scroll-padding-right: 0;
+            }
+            .navigation-buttons {
+                display: none;
+            }
+            .dynamic-island {
+                bottom: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .spotify-item {
+                width: 250px;
+                height: 275px;
+            }
+            .content {
+                gap: 15px;
+                padding: 10px;
+                width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="Hitsong.png" alt="Logo" style="height: 128px; vertical-align: middle;" /></a>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="hit.html">HIT</a>
+            <a href="#" class="button-link">SIGN UP</a>
+        </nav>
+    </header>
+
+    <div class="scene">
+        <div class="content" id="content">
+        </div>
+    </div>
+
+    <div class="navigation-buttons">
+        <button class="scroll-button left" id="scrollLeft">❮</button>
+        <button class="scroll-button right" id="scrollRight">❯</button>
+    </div>
+
+    <div class="dynamic-island">
+        <div class="dynamic-island-menu" id="menu">
+            <div class="dynamic-island-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        const contentRotationElement = document.getElementById('content');
+        if (contentRotationElement) {
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const maxScroll = document.body.scrollHeight - window.innerHeight;
+                const scrollPercent = maxScroll > 0 ? scrollTop / maxScroll : 0;
+                const rotation = scrollPercent * 180;
+
+            });
+        }
+
+        const menu = document.getElementById('menu');
+        const links = menu.querySelectorAll('a');
+        const indicator = menu.querySelector('.dynamic-island-indicator');
+        const INDICATOR_WIDTH = 90;
+
+        function moveIndicatorTo(element) {
+            const rect = element.getBoundingClientRect();
+            const parentRect = menu.getBoundingClientRect();
+            const center = rect.left + rect.width / 2 - parentRect.left;
+            const left = center - INDICATOR_WIDTH / 2;
+            indicator.style.left = `${left}px`;
+        }
+
+        links.forEach(link => {
+            link.addEventListener('click', e => {
+                links.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                moveIndicatorTo(link);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            const currentActive = menu.querySelector('a.active');
+            if (currentActive) moveIndicatorTo(currentActive);
+        });
+
+        const contentScrollable = document.getElementById('content');
+        const scrollLeftBtn = document.getElementById('scrollLeft');
+        const scrollRightBtn = document.getElementById('scrollRight');
+
+
+        const originalIframes = [
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/4MwsZDvczKjzsXSehD2g8Y?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2cO9tG9jJNHey9z1yYn6uO?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/7mpfpHqxY2NYIyLeVgiKqV?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/7mpfpHqxY2NYIyLeVgiKqV?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/7ubeSFrM5kmQ8aZ9s7tzDb?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/0pMN0WMwYuUowpQcq6quQa?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5xERFkNe9f6GaASxZQF7pG?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/31hqdWiA5qCxatvPO7hZ52?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3VZl6rKRSrjc5TcF9MsInj?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>',
+            '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2pPv2gdncWZnhNn7upn7ik?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'
+        ];
+
+        let spotifyItems = [];
+        let currentActiveItem = null;
+        let isProgrammaticScroll = false;
+
+        const numClones = originalIframes.length * 2;
+        let initialScrollOffset = 0;
+        let itemFullWidth = 0;
+        let originalContentStartScrollPosition = 0;
+        let originalContentEndScrollPosition = 0;
+
+        function setupInfiniteScroll() {
+            if (!contentScrollable) return;
+            contentScrollable.innerHTML = '';
+
+            for (let i = originalIframes.length - numClones; i < originalIframes.length; i++) {
+                const item = document.createElement('div');
+                item.className = 'spotify-item clone-start';
+                item.innerHTML = originalIframes[(i % originalIframes.length + originalIframes.length) % originalIframes.length];
+                contentScrollable.appendChild(item);
+            }
+
+            originalIframes.forEach(iframeHtml => {
+                const item = document.createElement('div');
+                item.className = 'spotify-item original';
+                item.innerHTML = iframeHtml;
+                contentScrollable.appendChild(item);
+            });
+
+            for (let i = 0; i < numClones; i++) {
+                const item = document.createElement('div');
+                item.className = 'spotify-item clone-end';
+                item.innerHTML = originalIframes[i % originalIframes.length];
+                contentScrollable.appendChild(item);
+            }
+
+            spotifyItems = Array.from(contentScrollable.querySelectorAll('.spotify-item'));
+
+            setDimensionsAndPadding();
+
+
+            if (spotifyItems.length > 0) {
+                const firstOriginalItem = spotifyItems[numClones];
+                const contentWidth = contentScrollable.clientWidth;
+                const itemWidth = firstOriginalItem.offsetWidth;
+
+
+                if (window.innerWidth <= 768) {
+                    initialScrollOffset = firstOriginalItem.offsetLeft - (contentWidth - itemWidth) / 2;
+                } else {
+                    initialScrollOffset = firstOriginalItem.offsetLeft - (contentWidth - itemWidth) / 2;
+                }
+                contentScrollable.scrollLeft = initialScrollOffset;
+            }
+        }
+
+        function setDimensionsAndPadding() {
+            if (spotifyItems.length === 0 || !contentScrollable) return;
+
+            const baseItem = spotifyItems[0];
+            const itemWidth = baseItem.offsetWidth;
+            const gap = parseFloat(getComputedStyle(contentScrollable).getPropertyValue('gap')) || 0;
+            itemFullWidth = itemWidth + gap;
+
+            contentScrollable.style.gridAutoColumns = `${itemWidth}px`;
+
+            const contentWidth = contentScrollable.clientWidth;
+
+            const padding = (contentWidth - itemWidth) / 2;
+            if (window.innerWidth > 768) {
+                contentScrollable.style.scrollPaddingLeft = `${padding}px`;
+                contentScrollable.style.scrollPaddingRight = `${padding}px`;
+            } else {
+                contentScrollable.style.scrollPaddingLeft = `0px`;
+                contentScrollable.style.scrollPaddingRight = `0px`;
+            }
+
+
+            if (spotifyItems.length > 0) {
+                const firstOriginalItem = spotifyItems[numClones];
+                const lastOriginalItem = spotifyItems[numClones + originalIframes.length - 1];
+
+
+                originalContentStartScrollPosition = firstOriginalItem.offsetLeft - parseFloat(getComputedStyle(contentScrollable).scrollPaddingLeft);
+                originalContentEndScrollPosition = lastOriginalItem.offsetLeft - parseFloat(getComputedStyle(contentScrollable).scrollPaddingLeft);
+            }
+        }
+
+        function updateActiveItem() {
+            if (!contentScrollable) return;
+
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            const contentRect = contentScrollable.getBoundingClientRect();
+            const contentCenterX = contentRect.left + contentRect.width / 2;
+
+            spotifyItems.forEach((item) => {
+                const itemRect = item.getBoundingClientRect();
+                const itemCenterX = itemRect.left + itemRect.width / 2;
+                const distance = Math.abs(itemCenterX - contentCenterX);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            if (currentActiveItem && currentActiveItem !== closestItem) {
+                currentActiveItem.classList.remove('active');
+            }
+            if (closestItem && closestItem !== currentActiveItem) {
+                closestItem.classList.add('active');
+                currentActiveItem = closestItem;
+            }
+        }
+
+        function updateButtonVisibility() {
+            if (scrollLeftBtn && scrollRightBtn) {
+
+                if (window.innerWidth <= 768) {
+                    scrollLeftBtn.style.display = 'none';
+                    scrollRightBtn.style.display = 'none';
+                } else {
+                    scrollLeftBtn.style.display = 'flex';
+                    scrollRightBtn.style.display = 'flex';
+                }
+            }
+        }
+
+        function scrollByDirection(direction) {
+            if (!contentScrollable || !currentActiveItem) return;
+
+
+            if (window.innerWidth <= 768) {
+                return;
+            }
+
+            isProgrammaticScroll = true;
+
+            let currentActiveItemIndexInAll = spotifyItems.indexOf(currentActiveItem);
+            if (currentActiveItemIndexInAll === -1) {
+
+                currentActiveItemIndexInAll = numClones;
+            }
+
+            let targetIndex = currentActiveItemIndexInAll + direction;
+
+
+            if (direction === 1) {
+                if (targetIndex >= numClones + originalIframes.length) {
+                    targetIndex = numClones;
+                }
+            } else { // Scrolling left
+                if (targetIndex < numClones) {
+                    targetIndex = numClones + originalIframes.length - 1;
+                }
+            }
+
+            const targetItem = spotifyItems[targetIndex];
+
+            if (targetItem) {
+                const contentWidth = contentScrollable.clientWidth;
+                const itemWidth = targetItem.offsetWidth;
+                const targetScrollLeft = targetItem.offsetLeft - (contentWidth - itemWidth) / 2;
+                contentScrollable.scrollTo({
+                    left: targetScrollLeft,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        if (scrollLeftBtn) scrollLeftBtn.addEventListener('click', () => scrollByDirection(-1));
+        if (scrollRightBtn) scrollRightBtn.addEventListener('click', () => scrollByDirection(1));
+
+
+        if (contentScrollable) {
+            contentScrollable.addEventListener('scroll', () => {
+                if (!isProgrammaticScroll) {
+                    clearTimeout(contentScrollable.activeTimeout);
+                    contentScrollable.activeTimeout = setTimeout(updateActiveItem, 150);
+                }
+
+                const currentScrollLeft = contentScrollable.scrollLeft;
+
+
+                if (currentScrollLeft >= originalContentEndScrollPosition + (itemFullWidth / 2)) {
+                    isProgrammaticScroll = true;
+                    contentScrollable.scrollLeft = originalContentStartScrollPosition + (currentScrollLeft - (originalContentEndScrollPosition + (itemFullWidth / 2)));
+                } else if (currentScrollLeft <= originalContentStartScrollPosition - (itemFullWidth / 2)) {
+                    isProgrammaticScroll = true;
+                    contentScrollable.scrollLeft = originalContentEndScrollPosition - ((originalContentStartScrollPosition - (itemFullWidth / 2)) - currentScrollLeft);
+                }
+            });
+
+            contentScrollable.addEventListener('scrollend', () => {
+                isProgrammaticScroll = false;
+                updateActiveItem();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupInfiniteScroll();
+
+            setTimeout(() => {
+                updateActiveItem();
+                updateButtonVisibility();
+            }, 100);
+
+
+            const path = window.location.pathname;
+            links.forEach(link => {
+                if (link.getAttribute('href') === 'gallery.html' || path.includes('/gallery.html')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            const activeLink = menu.querySelector('a.active');
+            if (activeLink) {
+                moveIndicatorTo(activeLink);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            setDimensionsAndPadding();
+
+
+            if (currentActiveItem && contentScrollable) {
+                const activeItemIndex = spotifyItems.indexOf(currentActiveItem);
+                if (activeItemIndex !== -1) {
+                    const targetItem = spotifyItems[activeItemIndex];
+
+                    if (window.innerWidth > 768) {
+                        const targetScrollLeft = targetItem.offsetLeft - (contentScrollable.clientWidth - targetItem.offsetWidth) / 2;
+                        contentScrollable.scrollLeft = targetScrollLeft;
+                    } else {
+
+                        contentScrollable.scrollLeft = targetItem.offsetLeft;
+                    }
+                }
+            } else if (contentScrollable && spotifyItems.length > 0) {
+
+                const firstOriginalItem = spotifyItems[numClones];
+                const contentWidth = contentScrollable.clientWidth;
+                const itemWidth = firstOriginalItem.offsetWidth;
+                initialScrollOffset = firstOriginalItem.offsetLeft - (contentWidth - itemWidth) / 2;
+                contentScrollable.scrollLeft = initialScrollOffset;
+            }
+            setTimeout(updateActiveItem, 100);
+            updateButtonVisibility();
+
+            const currentActive = menu.querySelector('a.active');
+            if (currentActive) moveIndicatorTo(currentActive);
+        });
+    </script>
+</body>
+
+</html>

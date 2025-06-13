@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Hitsong - 本月熱門</title>
+    <link rel="icon" href="https://i.postimg.cc/bwZ33vXg/Photoroom.png" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 64px;
+            height: 100vh;
+            background: #111;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            box-sizing: border-box;
+            color: #fff;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        
+        .logo img {
+            height: 128px;
+            vertical-align: middle;
+            -webkit-user-drag: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transition: all 0.3s;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        nav a:hover {
+            opacity: 1;
+            color: #fff;
+        }
+        
+        .button-link {
+            border: 1px solid #fff;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: none;
+            color: #fff;
+            cursor: pointer;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .button-link:hover {
+            background-color: #fff;
+            color: #000;
+        }
+        
+        .hit-page-container {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 24px;
+            color: #fff;
+        }
+        
+        .track-list {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .track-list thead th {
+            font-size: 0.8rem;
+            color: #b3b3b3;
+            text-align: left;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+        }
+        
+        .track-list thead th:first-child {
+            width: 40px;
+            padding-left: 10px;
+        }
+        
+        .track-list thead th:nth-child(2) {
+            width: 50%;
+            /* Title column */
+        }
+        
+        .track-list thead th:nth-child(3) {
+            width: 30%;
+            /* Album column */
+        }
+        
+        .track-list thead th:last-child {
+            width: 60px;
+            text-align: right;
+            padding-right: 10px;
+        }
+        
+        .track-list tbody tr {
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .track-list tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+        }
+        
+        .track-list tbody td {
+            padding: 10px 0;
+            vertical-align: middle;
+            color: #fff;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .track-list tbody td:first-child {
+            text-align: left;
+            padding-left: 10px;
+            padding-right: 0;
+            color: #b3b3b3;
+            font-size: 0.85rem;
+            width: 40px;
+            box-sizing: border-box;
+        }
+        
+        .track-list tbody td:last-child {
+            text-align: right;
+            padding-right: 10px;
+            color: #b3b3b3;
+        }
+        
+        .track-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .track-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+            object-fit: cover;
+            -webkit-user-drag: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .track-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .track-artist {
+            font-size: 0.8rem;
+            color: #b3b3b3;
+        }
+        
+        .explicit-tag {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #b3b3b3;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 2px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .dynamic-island {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            border-radius: 999px;
+            padding: 8px 16px;
+            z-index: 1001;
+        }
+        
+        .dynamic-island-menu {
+            position: relative;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .dynamic-island-menu a {
+            position: relative;
+            text-decoration: none;
+            width: 70px;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 999px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+            z-index: 2;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .dynamic-island-menu a.active {
+            color: black;
+        }
+        
+        .dynamic-island-menu a:hover {
+            opacity: 1;
+        }
+        
+        .dynamic-island-indicator {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background: white;
+            border-radius: 999px;
+            transition: left 0.3s ease, width 0.3s ease;
+            z-index: 1;
+            width: 70px;
+        }
+        
+        @media (max-width: 1024px) {
+            header {
+                padding: 0 20px;
+            }
+            .logo img {
+                height: 100px;
+            }
+            nav {
+                gap: 15px;
+            }
+            nav a {
+                font-size: 0.8rem;
+            }
+            .button-link {
+                padding: 5px 12px;
+                font-size: 0.7rem;
+            }
+            .hit-page-container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+            .page-title {
+                font-size: 1.8rem;
+            }
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 20px;
+            }
+            .track-list thead th,
+            .track-list tbody td {
+                font-size: 0.85rem;
+                padding: 8px 0;
+            }
+            .track-cover {
+                width: 40px;
+                height: 40px;
+            }
+            .track-info {
+                gap: 10px;
+            }
+            .track-artist {
+                font-size: 0.75rem;
+            }
+            .explicit-tag {
+                font-size: 0.55rem;
+                padding: 1px 3px;
+            }
+            .dynamic-island {
+                bottom: 20px;
+                padding: 6px 12px;
+            }
+            .dynamic-island-menu {
+                gap: 10px;
+            }
+            .dynamic-island-menu a {
+                width: 65px;
+                padding: 8px 0;
+                font-size: 0.75rem;
+            }
+            .dynamic-island-indicator {
+                width: 65px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 15px;
+            }
+            .logo {
+                margin-bottom: 10px;
+            }
+            .logo img {
+                height: 80px;
+            }
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            nav a {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+            .button-link {
+                padding: 4px 10px;
+                font-size: 0.65rem;
+            }
+            body {
+                padding-top: 150px;
+            }
+            .hit-page-container {
+                margin: 15px auto;
+                padding: 0 10px;
+            }
+            .page-title {
+                font-size: 1.5rem;
+            }
+            .subtitle {
+                font-size: 0.75rem;
+                margin-bottom: 15px;
+            }
+            .track-list thead th,
+            .track-list tbody td {
+                font-size: 0.8rem;
+                padding: 6px 0;
+            }
+            .track-list thead th:nth-child(3),
+            .track-list tbody td:nth-child(3) {
+                display: none;
+            }
+            .track-list thead th:nth-child(2) {
+                width: 70%;
+            }
+            .track-list thead th:last-child {
+                width: 30%;
+            }
+            .track-cover {
+                width: 36px;
+                height: 36px;
+            }
+            .track-details {
+                font-size: 0.85rem;
+            }
+            .track-artist {
+                font-size: 0.7rem;
+            }
+            .dynamic-island {
+                bottom: 15px;
+                padding: 5px 10px;
+            }
+            .dynamic-island-menu {
+                gap: 8px;
+            }
+            .dynamic-island-menu a {
+                width: 55px;
+                padding: 7px 0;
+                font-size: 0.7rem;
+            }
+            .dynamic-island-indicator {
+                width: 55px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 10px 10px;
+            }
+            .logo img {
+                height: 70px;
+            }
+            nav a {
+                font-size: 0.7rem;
+            }
+            .button-link {
+                font-size: 0.6rem;
+            }
+            body {
+                padding-top: 130px;
+            }
+            .hit-page-container {
+                margin: 10px auto;
+                padding: 0 8px;
+            }
+            .page-title {
+                font-size: 1.3rem;
+            }
+            .subtitle {
+                font-size: 0.7rem;
+            }
+            .track-list thead th,
+            .track-list tbody td {
+                font-size: 0.75rem;
+                padding: 5px 0;
+            }
+            .track-cover {
+                width: 32px;
+                height: 32px;
+            }
+            .track-details {
+                font-size: 0.8rem;
+            }
+            .track-artist {
+                font-size: 0.65rem;
+            }
+            .dynamic-island {
+                bottom: 10px;
+                padding: 4px 8px;
+            }
+            .dynamic-island-menu a {
+                width: 45px;
+                padding: 6px 0;
+                font-size: 0.65rem;
+            }
+            .dynamic-island-indicator {
+                width: 45px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="Hitsong.png" alt="Logo" style="height: 128px; vertical-align: middle;" /></a>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="hit.html">HIT</a>
+            <a href="#" class="button-link">SIGN UP</a>
+        </nav>
+    </header>
+
+    <div class="hit-page-container">
+        <h1 class="page-title">本月推薦歌曲</h1>
+        <p class="subtitle"></p>
+
+        <table class="track-list" id="trackList">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>標題</th>
+                    <th>專輯</th>
+                    <th>時間</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dynamic-island">
+        <div class="dynamic-island-menu" id="categoryMenu">
+            <a href="#" data-category="global">GLOBAL</a>
+            <a href="#" data-category="cpop">C-POP</a>
+            <a href="#" data-category="kpop">K-POP</a>
+            <a href="#" data-category="jpop">J-POP</a>
+            <div class="dynamic-island-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        const categoryMenu = document.getElementById('categoryMenu');
+        const categoryLinks = categoryMenu.querySelectorAll('a');
+        const indicator = categoryMenu.querySelector('.dynamic-island-indicator');
+        const trackListBody = document.querySelector('#trackList tbody');
+        const pageTitle = document.querySelector('.page-title');
+
+        let INDICATOR_WIDTH = 70;
+
+        const allSongs = {
+            global: [{
+                id: 1,
+                cover: "https://i.ibb.co/4RSghHbG/whocares.jpg",
+                title: "菸癮",
+                artist: "Who Cares 胡凱兒",
+                album: "昨天",
+                duration: "5:43",
+                explicit: false
+            }, {
+                id: 2,
+                cover: "https://i.postimg.cc/HL60v52c/Justice.png",
+                title: "Die For You (feat. Dominic Fike)",
+                artist: "Justin Bieber,Dominic Fike",
+                album: "Justice",
+                duration: "3:18",
+                explicit: true
+            }, {
+                id: 3,
+                cover: "https://i.ibb.co/fzs647w6/outforthenight.jpg",
+                title: "Out for the night",
+                artist: "21 Savage",
+                album: "i am>i was",
+                duration: "2:17",
+                explicit: false
+            }, {
+                id: 4,
+                cover: "https://i.ibb.co/fzs647w6/outforthenight.jpg",
+                title: "Love Me Like a Friend",
+                artist: "Fly By Midnight",
+                album: "Happy About Everything Else...",
+                duration: "3:22",
+                explicit: false
+            }, {
+                id: 5,
+                cover: "https://i.ibb.co/HDCQYcrc/bornagain.jpg",
+                title: "Born Again (feat. Doja Cat & RAYE)",
+                artist: "LISA, Doja Cat, RAYE",
+                album: "Alter Ego",
+                duration: "3:51",
+                explicit: false
+            }, {
+                id: 6,
+                cover: "https://i.ibb.co/8DJ1wXgz/thewayyoufelt.jpg",
+                title: "The Way You Felt",
+                artist: "Alec Benjamin",
+                album: "(Un)Commentary",
+                duration: "3:03",
+                explicit: false
+            }, {
+                id: 7,
+                cover: "https://i.ibb.co/VcTwXJ0J/escapism.jpg",
+                title: "Escapism.",
+                artist: "RAYE, 070 Shake",
+                album: "My 21st Century Blues",
+                duration: "4:32",
+                explicit: true
+            }, {
+                id: 8,
+                cover: "https://i.ibb.co/4Z7ph2t7/novelbright.jpg",
+                title: "ツキミソウ",
+                artist: "Novelbright",
+                album: "開幕宣言",
+                duration: "5:12",
+                explicit: false
+            }, {
+                id: 9,
+                cover: "https://i.ibb.co/1Jhztqvq/whatdoyoumean.jpg",
+                title: "What Do You Mean?",
+                artist: "Justin Bieber",
+                album: "Purpose (Deluxe)",
+                duration: "3:25",
+                explicit: true
+            }, {
+                id: 10,
+                cover: "https://i.ibb.co/bR28x5Hp/funkyfriday.jpg",
+                title: "Funky Friday",
+                artist: "Dave, Fredo",
+                album: "Funky Friday",
+                duration: "3:02",
+                explicit: false
+            }],
+            cpop: [{
+                id: 1,
+                cover: "https://i.ibb.co/4RSghHbG/whocares.jpg",
+                title: "菸癮",
+                artist: "Who Cares 胡凱兒",
+                album: "昨天",
+                duration: "5:43",
+                explicit: false
+            }, {
+                id: 2,
+                cover: "https://i.ibb.co/dwSqswJb/ninechen.jpg",
+                title: "可是他叫我寶A",
+                artist: "陳零九, 文慧如",
+                album: "可是他叫我寶A",
+                duration: "3:43",
+                explicit: false
+            }, {
+                id: 3,
+                cover: "https://i.ibb.co/MDbtmGZK/asen.jpg",
+                title: "土黑娃",
+                artist: "艾志恆Asen, THOME",
+                album: "土黑娃",
+                duration: "4:03",
+                explicit: false
+            }, {
+                id: 4,
+                cover: "https://i.ibb.co/LdYhSq7y/ninezhan.jpg",
+                title: "九張機",
+                artist: "葉炫清",
+                album: "九張機",
+                duration: "3:40",
+                explicit: false
+            }, {
+                id: 5,
+                cover: "https://i.ibb.co/VWM9R9Ry/linshaoke.jpg",
+                title: "我要",
+                artist: "林小珂",
+                album: "我要",
+                duration: "3:43",
+                explicit: false
+            }, {
+                id: 6,
+                cover: "https://i.ibb.co/7x70Fbtr/luyun.jpg",
+                title: "回郵 (Re:)",
+                artist: "呂允",
+                album: "回郵 (Re:)",
+                duration: "4:22",
+                explicit: false
+            }, {
+                id: 7,
+                cover: "https://i.ibb.co/bgwcHhMs/stefaniesun.jpg",
+                title: "遇見",
+                artist: "孫燕姿",
+                album: "The Moment",
+                duration: "3:29",
+                explicit: false
+            }, {
+                id: 8,
+                cover: "https://i.ibb.co/ynbc53Tz/linshaoke2.jpg",
+                title: "記得很清楚",
+                artist: "林小珂",
+                album: "記得很清楚",
+                duration: "4:08",
+                explicit: false
+            }, {
+                id: 9,
+                cover: "https://i.ibb.co/G3vQw8NH/aiwei.jpg",
+                title: "失重前幸福",
+                artist: "艾薇",
+                album: "I",
+                duration: "3:40",
+                explicit: false
+            }, {
+                id: 10,
+                cover: "https://i.ibb.co/s9DWmmK6/eveai.jpg",
+                title: "早晚",
+                artist: "艾怡良",
+                album: "早晚",
+                duration: "4:33",
+                explicit: false
+            }],
+            kpop: [{
+                id: 1,
+                cover: "https://i.postimg.cc/MpbmRgfY/jennie.jpg",
+                title: "like JENNIE",
+                artist: "JENNIE",
+                album: "Ruby",
+                duration: "2:04",
+                explicit: false
+            }, {
+                id: 2,
+                cover: "https://i.postimg.cc/Xvjcgxw6/hot.jpg",
+                title: "Ash",
+                artist: "LE SSERAFIM",
+                album: "HOT",
+                duration: "2:24",
+                explicit: false
+            }, {
+                id: 3,
+                cover: "https://i.postimg.cc/Xvjcgxw6/hot.jpg",
+                title: "HOT",
+                artist: "LE SSERAFIM",
+                album: "HOT",
+                duration: "3:18",
+                explicit: false
+            }, {
+                id: 4,
+                cover: "https://i.ibb.co/wrgKNXfc/eventhorizon.jpg",
+                title: "Event Horizon",
+                artist: "潤荷",
+                album: "YOUHNA 6th Album Repackage",
+                duration: "5:00",
+                explicit: false
+            }, {
+                id: 5,
+                cover: "https://i.ibb.co/zh8LjG1D/youcloudsrain.jpg",
+                title: "You, clouds, Rain",
+                artist: "Heize, Shin Yong Jae",
+                album: "/// (You, Clouds, Rain)",
+                duration: "3:25",
+                explicit: false
+            }, {
+                id: 6,
+                cover: "https://i.ibb.co/99n6QSht/super.jpg",
+                title: "Super",
+                artist: "SEVENTEEN",
+                album: "SEVENTEEN 10th Mini Album 'FML'",
+                duration: "3:20",
+                explicit: false
+            }, {
+                id: 7,
+                cover: "https://i.ibb.co/x81nvv1L/happen.jpg",
+                title: "HAPPEN",
+                artist: "Heize",
+                album: "HAPPEN",
+                duration: "3:13",
+                explicit: false
+            }, {
+                id: 8,
+                cover: "https://i.ibb.co/fdVd5jCT/runningtroughthenight.jpg",
+                title: "Running Through The Night",
+                artist: "Seori",
+                album: "?depacse ohw",
+                duration: "3:15",
+                explicit: false
+            }, {
+                id: 9,
+                cover: "https://i.ibb.co/7t4t9dSj/villain.jpg",
+                title: "Villain",
+                artist: "Stella Jang",
+                album: "STELLAI",
+                duration: "3:10",
+                explicit: false
+            }, {
+                id: 10,
+                cover: "https://i.ibb.co/PszMYrF3/tox.jpg",
+                title: "To.X",
+                artist: "太妍",
+                album: "To.X - The 5th Mini Album",
+                duration: "2:50",
+                explicit: false
+            }],
+            jpop: [{
+                id: 1,
+                cover: "https://i.ibb.co/4Z7ph2t7/novelbright.jpg",
+                title: "ツキミソウ",
+                artist: "Novelbright",
+                album: "開幕宣言",
+                duration: "5:12",
+                explicit: false
+            }, {
+                id: 2,
+                cover: "https://i.ibb.co/FLbXVjFR/somethingwithoutshape.jpg",
+                title: "Something without shape",
+                artist: "Nemo_Suzumi",
+                album: "Something without shape",
+                duration: "3:00",
+                explicit: false
+            }, {
+                id: 3,
+                cover: "https://i.ibb.co/B5ZdBVxd/endlesstear.jpg",
+                title: "Endless Tear feat. 中村舞子",
+                artist: "Cliff Edge, 中村舞子",
+                album: "The BEST You're the only one",
+                duration: "4:20",
+                explicit: false
+            }, {
+                id: 4,
+                cover: "https://i.ibb.co/SX0z3XB8/spitz.jpg",
+                title: "空も飛べるはず",
+                artist: "SPITZ",
+                album: "CYCLE HIT 1991-1997 Spitz",
+                duration: "4:31",
+                explicit: false
+            }, {
+                id: 5,
+                cover: "https://i.ibb.co/6JgKg89z/mokiwo.jpg",
+                title: "恋色",
+                artist: "もさを",
+                album: "こいのうた",
+                duration: "4:41",
+                explicit: false
+            }, {
+                id: 6,
+                cover: "https://i.ibb.co/jPq7jZ0P/yorusika.jpg",
+                title: "言って",
+                artist: "ヨルシカ",
+                album: "夏草が邪魔をする",
+                duration: "4:02",
+                explicit: false
+            }, {
+                id: 7,
+                cover: "https://i.ibb.co/Xf1rWLPb/hana.jpg",
+                title: "花",
+                artist: "Fujii Kaze",
+                album: "花",
+                duration: "4:06",
+                explicit: false
+            }, {
+                id: 8,
+                cover: "https://i.ibb.co/9kgGwvsf/sayonara.jpg",
+                title: "さよーならまたいつか！",
+                artist: "米津玄師",
+                album: "さよーならまたいつか！",
+                duration: "3:21",
+                explicit: false
+            }, {
+                id: 9,
+                cover: "https://i.ibb.co/gbPgScJn/staywithme.jpg",
+                title: "真夜中のドア/Stay With Me",
+                artist: "Miki Matsubara",
+                album: "MIKI Matsubara Best Collection",
+                duration: "5:12",
+                explicit: false
+            }, {
+                id: 10,
+                cover: "https://i.ibb.co/9JySRyQ/takuakiog.jpg",
+                title: "ただ君に晴れ",
+                artist: "ヨルシカ",
+                album: "ただ君に晴れ",
+                duration: "3:18",
+                explicit: false
+            }]
+        };
+
+        function moveIndicatorTo(element) {
+            const rect = element.getBoundingClientRect();
+            const parentRect = categoryMenu.getBoundingClientRect();
+
+            const left = rect.left - parentRect.left;
+
+            indicator.style.left = `${left}px`;
+            indicator.style.width = `${rect.width}px`;
+        }
+
+        function renderSongs(category) {
+            trackListBody.innerHTML = '';
+            const songsToRender = allSongs[category];
+
+
+            const categoryTitles = {
+                global: '全球',
+                cpop: '華語',
+                kpop: '韓語',
+                jpop: '日語'
+            };
+            pageTitle.textContent = `${categoryTitles[category]}本月推薦歌曲`;
+
+
+            if (songsToRender) {
+                songsToRender.forEach(song => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${song.id}</td>
+                        <td>
+                            <div class="track-info">
+                                <img src="${song.cover}" alt="${song.album} Album" class="track-cover">
+                                <div class="track-details">
+                                    <div class="track-title">${song.title} ${song.explicit ? '<span class="explicit-tag">E</span>' : ''}</div>
+                                    <div class="track-artist">${song.artist}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${song.album}</td>
+                        <td>${song.duration}</td>
+                    `;
+                    trackListBody.appendChild(row);
+                });
+            } else {
+                trackListBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">沒有找到歌曲數據。</td></tr>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const defaultCategoryLink = categoryMenu.querySelector('a[data-category="global"]');
+            if (defaultCategoryLink) {
+                defaultCategoryLink.classList.add('active');
+                moveIndicatorTo(defaultCategoryLink);
+                renderSongs('global');
+            }
+
+
+            const headerNavLinks = document.querySelectorAll('header nav a');
+            headerNavLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                const path = window.location.pathname;
+                if (linkHref === 'hit.html' && path.includes('hit.html')) {
+                    link.classList.add('active');
+                } else if (linkHref === 'gallery.html' && path.includes('gallery.html')) {
+                    link.classList.add('active');
+                } else if (linkHref === 'index.html' && (path === '/' || path.endsWith('/index.html') || path.endsWith('/'))) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+
+        categoryLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+
+
+                categoryLinks.forEach(l => l.classList.remove('active'));
+
+                link.classList.add('active');
+
+
+                moveIndicatorTo(link);
+
+
+                const selectedCategory = link.dataset.category;
+                renderSongs(selectedCategory);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            const currentActive = categoryMenu.querySelector('a.active');
+            if (currentActive) moveIndicatorTo(currentActive);
+        });
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+</html>
